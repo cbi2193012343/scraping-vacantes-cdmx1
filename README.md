@@ -1,27 +1,29 @@
 # Scraping Web Vacantes CDMX
 
-Proyecto para monitorear en tiempo real el sector `data` en Ciudad de Mexico usando web scraping sobre OCC Mexico.
+Proyecto de scraping y generacion de reportes automatizados sobre vacantes de `data` en Ciudad de Mexico usando OCC Mexico como fuente principal.
 
-El objetivo es identificar vacantes relevantes del sector `data`, con foco en:
+El flujo del proyecto esta dividido en dos etapas:
 
-- salarios de al menos `17,000 MXN`
-- puestos de `data` y analitica
-- seguimiento de empresas, tecnologias y tendencias salariales
-- guardado diario de resultados sin sobrescribir ejecuciones del mismo dia
+1. `scrape_occ_cdmx.py` obtiene y filtra las vacantes.
+2. `generate_occ_report.py` toma la corrida mas reciente y construye un reporte con graficas incrustadas.
+
+## Objetivo
+
+Monitorear vacantes de data en CDMX, filtrar oportunidades con mejor compensacion y generar reportes automaticos para seguimiento historico.
 
 ## Caracteristicas
 
-- Scraping automatico de vacantes en OCC Mexico
-- Filtro salarial minimo de `17,000 MXN`
-- Deteccion de vacantes orientadas a `data`
-- Analisis de empresas, salarios y tecnologias
-- Generacion de salidas diarias en una carpeta con fecha
-- Bloqueo de re-ejecucion dentro del mismo dia
-- Compatible con ejecucion manual o programada al iniciar Windows
+- Scraping automatizado de OCC Mexico.
+- Enfoque en vacantes de data en CDMX.
+- Filtro salarial minimo de `17,000 MXN`.
+- Guardado diario por fecha en formato `31May26`.
+- Evita volver a procesar la misma fecha si ya existe una corrida guardada.
+- Generacion de reportes HTML con graficas insertadas.
+- Generacion de un resumen en texto con conclusiones.
 
-## Estructura del Proyecto
+## Estructura del proyecto
 
-| Archivo / Carpeta | Proposito |
+| Archivo o carpeta | Proposito |
 |---|---|
 | `scrape_occ_cdmx.py` | Script principal: scrapea, filtra, analiza y guarda salidas |
 | `generate_occ_report.py` | Toma la corrida mas reciente y genera un reporte automatizado |
@@ -30,53 +32,48 @@ El objetivo es identificar vacantes relevantes del sector `data`, con foco en:
 | `runs/` | Salidas diarias generadas por el scraper |
 | `reports/` | Reportes automatizados con graficas y conclusiones |
 
-## Flujo
+## Flujo de trabajo
 
-| Etapa | Descripcion |
-|---|---|
-| 1 | Se consulta OCC Mexico para tecnologia en Ciudad de Mexico |
-| 2 | Se extraen vacantes pagina por pagina |
-| 3 | Se normalizan salarios, empresas y ubicaciones |
-| 4 | Se filtra por salario minimo y por roles de `data` |
-| 5 | Se genera un resumen y se guarda todo en una carpeta con fecha |
+| Paso | Entrada | Salida |
+|---|---|---|
+| 1 | Pagina de OCC | Vacantes crudas de tecnologia en CDMX |
+| 2 | Vacantes crudas | Vacantes con salario >= `17,000 MXN` |
+| 3 | Vacantes filtradas | Vacantes de data con salario >= `17,000 MXN` |
+| 4 | Ultima corrida guardada | Reporte HTML, graficas y resumen TXT |
 
 ## Inputs
 
-| Input | Tipo | Descripcion |
+| Input | Descripcion | Formato |
 |---|---|---|
-| OCC Mexico | Fuente web | Listado publico de vacantes de tecnologia en CDMX |
-| `BASE_URL` | Configuracion | URL base del scraping |
-| `MAX_PAGES` | Configuracion | Numero maximo de paginas a recorrer |
-| `MIN_SALARY_MXN` | Configuracion | Piso salarial para filtrar vacantes |
-| `DATA_ROLE_KEYWORDS` | Configuracion | Palabras clave para detectar roles de data |
+| URL base de OCC | Pagina de vacantes de tecnologia en CDMX | HTML |
+| HTML de cada pagina | Contenido de las tarjetas de vacante | HTML |
+| Campos extraidos | `title`, `company`, `location`, `salary_text`, `benefits`, `job_url` | Texto / CSV |
+| Corrida mas reciente | Carpeta dentro de `runs/` | CSV |
 
 ## Outputs
 
-| Output | Formato | Descripcion |
+| Output | Descripcion | Ubicacion |
 |---|---|---|
-| `runs/DDMonYY/occ_tech_cdmx_raw.json` | JSON | Datos crudos del scraping |
-| `runs/DDMonYY/occ_tech_cdmx_raw.csv` | CSV | Tabla completa de vacantes |
-| `runs/DDMonYY/occ_tech_cdmx_17000plus.csv` | CSV | Vacantes con salario >= 17k |
-| `runs/DDMonYY/occ_tech_cdmx_data_17000plus.csv` | CSV | Vacantes de data con salario >= 17k |
-| `runs/DDMonYY/occ_tech_cdmx_summary.txt` | TXT | Conclusiones del analisis diario |
-| `runs/DDMonYY/DONE.flag` | Flag | Marca para evitar re-ejecucion el mismo dia |
+| `occ_tech_cdmx_raw.json` | Vacantes completas scrapeadas | `runs/DDMonYY/` |
+| `occ_tech_cdmx_raw.csv` | Tabla cruda de vacantes | `runs/DDMonYY/` |
+| `occ_tech_cdmx_17000plus.csv` | Vacantes con salario >= `17,000 MXN` | `runs/DDMonYY/` |
+| `occ_tech_cdmx_data_17000plus.csv` | Vacantes de data con salario >= `17,000 MXN` | `runs/DDMonYY/` |
+| `occ_tech_cdmx_summary.txt` | Resumen de la corrida diaria | `runs/DDMonYY/` |
+| `DONE.flag` | Marca de corrida ya ejecutada | `runs/DDMonYY/` |
+| `DDMonYY_reporte.html` | Reporte automatizado con graficas incrustadas | `reports/DDMonYY/` |
+| `DDMonYY_conclusiones.txt` | Conclusiones en texto | `reports/DDMonYY/` |
+| `figures/*.png` | Graficas del reporte | `reports/DDMonYY/figures/` |
 
 ## Metodos
 
-| Metodo | Funcion |
+| Metodo | Uso |
 |---|---|
-| `fetch_html()` | Descarga el HTML de una pagina de OCC |
-| `extract_job_url_map()` | Lee el JSON-LD para obtener URLs reales de vacantes |
-| `parse_cards()` | Extrae datos de cada tarjeta de vacante |
-| `salary_to_range()` | Convierte salario textual a valores numericos |
-| `is_data_role()` | Detecta si una vacante corresponde al sector data |
-| `math_value_score()` | Prioriza vacantes con mejor encaje para perfil matematico |
-| `build_summary_text()` | Genera el texto de conclusiones del dia |
-| `main()` | Ejecuta todo el flujo y guarda las salidas |
-
-## Requisitos
-
-- Python 3.8+
+| `requests` | Descarga del HTML de OCC |
+| `BeautifulSoup` | Extraccion de tarjetas y campos de vacantes |
+| `pandas` | Limpieza, filtrado, analisis y exportacion de CSV |
+| `matplotlib` | Graficas de barras e histogramas |
+| `seaborn` | Visualizacion de distribuciones salariales |
+| `HTML + base64` | Insercion de graficas dentro del reporte |
 
 ## Instalacion
 
@@ -86,21 +83,49 @@ venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-## Ejecucion
+## Uso
+
+### Ejecutar el scraping
 
 ```powershell
 python scrape_occ_cdmx.py
 ```
 
-## Comportamiento diario
+### Generar el reporte
 
-El script crea una carpeta con la fecha actual, por ejemplo:
-
-```text
-runs\31May26
+```powershell
+python generate_occ_report.py
 ```
 
-Si el script ya se ejecuto ese dia, no vuelve a scrapear y termina con un mensaje indicando la carpeta disponible.
+El reporte se construye a partir de la corrida mas reciente dentro de `runs/` y se guarda en `reports/` con el mismo identificador de fecha.
+
+## Criterios de filtrado
+
+- Ubicacion: Ciudad de Mexico.
+- Sector: data.
+- Salario minimo: `17,000 MXN`.
+
+## Reporte automatizado
+
+El generador crea:
+
+- un HTML con graficas incrustadas,
+- un resumen textual con conclusiones,
+- una tabla con las vacantes mejor posicionadas,
+- y una carpeta de imagenes para inspeccion rapida.
+
+## Preguntas que responde el reporte
+
+1. Que empresas dominan el mercado?
+2. Que tecnologias se repiten mas?
+3. Cual es el rango salarial mas comun?
+4. Que vacantes aparecen mejor posicionadas dentro del filtro aplicado?
+
+## Comportamiento diario
+
+- El scraper guarda una corrida por fecha.
+- Si la corrida del dia ya existe, no se vuelve a ejecutar.
+- El generador de reporte siempre toma la ultima corrida disponible.
 
 ## Uso, intenciones y limites
 
@@ -139,6 +164,7 @@ Este proyecto esta pensado para analisis personal, academico y de portafolio. Su
 | `matplotlib` | Graficas para el reporte automatizado |
 | `seaborn` | Visualizaciones estadisticas |
 
-## Nota
+## Notas
 
-Este proyecto esta enfocado en el submercado `data` en CDMX y en la generacion de reportes reproducibles a partir de vacantes publicas.
+- El proyecto esta pensado para seguimiento de vacantes de data en CDMX.
+- Las salidas estan organizadas para facilitar analisis historico y publicacion en GitHub.
