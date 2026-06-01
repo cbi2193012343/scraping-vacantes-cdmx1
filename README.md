@@ -6,6 +6,7 @@ El flujo del proyecto esta dividido en dos etapas:
 
 1. `scrape_occ_cdmx.py` obtiene y filtra las vacantes.
 2. `generate_occ_report.py` toma la corrida mas reciente y construye un reporte con graficas incrustadas.
+3. `run_daily_occ_pipeline.py` ejecuta scraping + reporte sin sobrescribir el resultado del dia.
 
 ## Objetivo
 
@@ -27,6 +28,7 @@ Monitorear vacantes de data en CDMX, filtrar oportunidades con mejor compensacio
 |---|---|
 | `scrape_occ_cdmx.py` | Script principal: scrapea, filtra, analiza y guarda salidas |
 | `generate_occ_report.py` | Toma la corrida mas reciente y genera un reporte automatizado |
+| `run_daily_occ_pipeline.py` | Ejecuta scraping y reporte diario con control de no sobrescritura |
 | `requirements.txt` | Dependencias del proyecto |
 | `.gitignore` | Archivos y carpetas que no deben subirse al repositorio |
 | `runs/` | Salidas diarias generadas por el scraper |
@@ -97,7 +99,14 @@ python scrape_occ_cdmx.py
 python generate_occ_report.py
 ```
 
+### Ejecutar el pipeline diario completo
+
+```powershell
+python run_daily_occ_pipeline.py
+```
+
 El reporte se construye a partir de la corrida mas reciente dentro de `runs/` y se guarda en `reports/` con el mismo identificador de fecha.
+Si el reporte del dia ya existe, no se sobrescribe.
 
 ## Criterios de filtrado
 
@@ -125,7 +134,8 @@ El generador crea:
 
 - El scraper guarda una corrida por fecha.
 - Si la corrida del dia ya existe, no se vuelve a ejecutar.
-- El generador de reporte siempre toma la ultima corrida disponible.
+- El generador de reporte no sobrescribe un reporte ya generado para el mismo dia.
+- El pipeline diario ejecuta scraping y reporte cuando corresponde una fecha nueva.
 
 ## Uso, intenciones y limites
 

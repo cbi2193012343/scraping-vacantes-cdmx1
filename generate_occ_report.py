@@ -21,6 +21,25 @@ RUNS_DIR = ROOT_DIR / "runs"
 REPORTS_DIR = ROOT_DIR / "reports"
 MIN_SALARY_MXN = 17000
 
+
+def current_date_tag(now: datetime | None = None) -> str:
+    now = now or datetime.now()
+    month_map = {
+        1: "Jan",
+        2: "Feb",
+        3: "Mar",
+        4: "Apr",
+        5: "May",
+        6: "Jun",
+        7: "Jul",
+        8: "Aug",
+        9: "Sep",
+        10: "Oct",
+        11: "Nov",
+        12: "Dec",
+    }
+    return f"{now.day:02d}{month_map[now.month]}{str(now.year)[2:]}"
+
 TECH_KEYWORDS = [
     "python",
     "sql",
@@ -548,11 +567,20 @@ def render_html_report(
 
 
 def main() -> int:
-    source_run_dir = latest_run_dir(RUNS_DIR)
-    raw_df, salary_df, data_df = load_run_data(source_run_dir)
-
-    report_tag = source_run_dir.name
+    report_tag = current_date_tag()
     report_dir, figures_dir = ensure_output_dirs(REPORTS_DIR / report_tag)
+    html_path = report_dir / f"{report_tag}_reporte.html"
+    txt_path = report_dir / f"{report_tag}_conclusiones.txt"
+
+    if html_path.exists() and txt_path.exists():
+        print(f"Ya existe el reporte de hoy ({report_tag}). No se sobrescribe.")
+        print(f"Reporte HTML: {html_path}")
+        print(f"Resumen TXT: {txt_path}")
+        return 0
+
+    today_run_dir = RUNS_DIR / report_tag
+    source_run_dir = today_run_dir if today_run_dir.exists() else latest_run_dir(RUNS_DIR)
+    raw_df, salary_df, data_df = load_run_data(source_run_dir)
 
     raw_df = add_analysis_columns(raw_df)
     salary_df = add_analysis_columns(salary_df)
@@ -572,9 +600,6 @@ def main() -> int:
         ascending=[False, False, False],
         na_position="last",
     ).head(10)
-
-    txt_path = report_dir / f"{report_tag}_conclusiones.txt"
-    html_path = report_dir / f"{report_tag}_reporte.html"
 
     write_text_summary(
         txt_path=txt_path,
@@ -602,6 +627,8 @@ def main() -> int:
     )
 
     print(f"Fuente: {source_run_dir}")
+    if source_run_dir.name != report_tag:
+        print(f"Nota: no existia corrida de hoy; se genero el reporte con la ultima corrida disponible.")
     print(f"Reporte HTML: {html_path}")
     print(f"Resumen TXT: {txt_path}")
     print(f"Graficas en: {figures_dir}")
