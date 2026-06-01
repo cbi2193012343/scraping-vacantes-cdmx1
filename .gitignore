@@ -1,0 +1,11 @@
+venv/
+.venv/
+__pycache__/
+*.pyc
+.env
+occ_tech_cdmx_raw.json
+occ_tech_cdmx_raw.csv
+occ_tech_cdmx_17000plus.csv
+occ_tech_cdmx_data_17000plus.csv
+*.log
+runs/
