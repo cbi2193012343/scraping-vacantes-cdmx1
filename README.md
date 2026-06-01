@@ -2,7 +2,7 @@
 
 Proyecto para monitorear en tiempo real el sector `data` en Ciudad de Mexico usando web scraping sobre OCC Mexico.
 
-El objetivo es identificar vacantes relevantes para un perfil matematico, con foco en:
+El objetivo es identificar vacantes relevantes del sector `data`, con foco en:
 
 - salarios de al menos `17,000 MXN`
 - puestos de `data` y analitica
@@ -24,9 +24,11 @@ El objetivo es identificar vacantes relevantes para un perfil matematico, con fo
 | Archivo / Carpeta | Proposito |
 |---|---|
 | `scrape_occ_cdmx.py` | Script principal: scrapea, filtra, analiza y guarda salidas |
+| `generate_occ_report.py` | Toma la corrida mas reciente y genera un reporte automatizado |
 | `requirements.txt` | Dependencias del proyecto |
 | `.gitignore` | Archivos y carpetas que no deben subirse al repositorio |
 | `runs/` | Salidas diarias generadas por el scraper |
+| `reports/` | Reportes automatizados con graficas y conclusiones |
 
 ## Flujo
 
@@ -75,7 +77,6 @@ El objetivo es identificar vacantes relevantes para un perfil matematico, con fo
 ## Requisitos
 
 - Python 3.8+
-- Conexion a internet
 
 ## Instalacion
 
@@ -101,6 +102,31 @@ runs\31May26
 
 Si el script ya se ejecuto ese dia, no vuelve a scrapear y termina con un mensaje indicando la carpeta disponible.
 
+## Uso, intenciones y limites
+
+Este proyecto esta pensado para analisis personal, academico y de portafolio. Su proposito es observar vacantes publicas, generar reportes y comparar tendencias del mercado laboral en CDMX.
+
+### Uso previsto
+
+- Analizar vacantes publicas del sector `data` en Ciudad de Mexico.
+- Generar reportes automaticos para seguimiento de empresas, salarios y tecnologias.
+- Revisar la evolucion de vacantes guardadas por fecha.
+
+### Limites del proyecto
+
+- No almacenar ni redistribuir datos personales sensibles.
+- No usar el proyecto para spam, reventa de datos o abuso de acceso.
+- No presentarlo como un producto oficial ni afiliado a OCC.
+- No intentar evadir restricciones tecnicas o de uso de la fuente original.
+- No reutilizar contenido crudo como si fuera informacion propia sin revisar los terminos aplicables.
+
+### Criterios de cumplimiento
+
+- Trabaja solo con informacion publicamente visible.
+- Mantiene filtros para reducir recoleccion innecesaria.
+- Evita guardar informacion personal no necesaria para el analisis.
+- Revisa los terminos del sitio origen antes de ampliar el alcance.
+
 ## Dependencias
 
 | Paquete | Uso |
@@ -110,7 +136,9 @@ Si el script ya se ejecuto ese dia, no vuelve a scrapear y termina con un mensaj
 | `numpy` | Soporte numerico |
 | `python-dotenv` | Preparado para variables de entorno |
 | `beautifulsoup4` | Parseo de HTML |
+| `matplotlib` | Graficas para el reporte automatizado |
+| `seaborn` | Visualizaciones estadisticas |
 
 ## Nota
 
-Este proyecto no esta enfocado en TI general. Esta enfocado en el submercado `data` en CDMX, con interes especial en puestos mejor pagados y mas cercanos a un perfil matematico.
+Este proyecto esta enfocado en el submercado `data` en CDMX y en la generacion de reportes reproducibles a partir de vacantes publicas.

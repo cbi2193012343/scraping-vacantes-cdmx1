@@ -9,3 +9,4 @@ occ_tech_cdmx_17000plus.csv
 occ_tech_cdmx_data_17000plus.csv
 *.log
 runs/
+reports/
